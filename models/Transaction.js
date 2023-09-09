@@ -13,8 +13,8 @@ const transactionSchema = new mongoose.Schema({
     balance: {
         type: Number,
         required: true,
-        set: v => mongoose.Types.Decimal128.fromString(v.toFixed(4)),
-        default: 0
+        set: (v) => mongoose.Types.Decimal128.fromString(v.toFixed(4)),
+        default: 0,
     },
     description: {
         type: String,

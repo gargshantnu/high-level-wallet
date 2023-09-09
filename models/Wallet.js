@@ -4,7 +4,7 @@ const walletSchema = new mongoose.Schema({
     balance: {
         type: Number,
         required: true,
-        set: v => mongoose.Types.Decimal128.fromString(v.toFixed(4)),
+        set: (v) => mongoose.Types.Decimal128.fromString(v.toFixed(4)),
     },
     name: {
         type: String,

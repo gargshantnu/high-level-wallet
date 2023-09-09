@@ -2,11 +2,13 @@ const express = require("express");
 const mongoose = require("mongoose");
 const app = express();
 
-
-mongoose.connect("mongodb+srv://mongo:mongo@cluster0.twuqxlt.mongodb.net/?retryWrites=true&w=majority", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-});
+mongoose.connect(
+    "mongodb+srv://mongo:mongo@cluster0.twuqxlt.mongodb.net/?retryWrites=true&w=majority",
+    {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    }
+);
 
 // Middleware
 app.use(express.json());
