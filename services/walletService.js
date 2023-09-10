@@ -1,11 +1,14 @@
 const Wallet = require("../models/Wallet");
 const Transaction = require("../models/Transaction");
 
-exports.setupWallet = async (balance, name) => {
+exports.setupWallet = async (balance = 0, name) => {
     // Check if a wallet with the same name already exists
     const existingWallet = await Wallet.findOne({ name });
     if (existingWallet) {
-        return { errorCode: "WalletAlreadyExist", message: "Wallet with the same name already exists" };
+        return {
+            errorCode: "WalletAlreadyExist",
+            message: "Wallet with the same name already exists",
+        };
     }
 
     const wallet = new Wallet({ balance, name });
@@ -15,12 +18,12 @@ exports.setupWallet = async (balance, name) => {
 
     // Create an initial transaction for the setup
     const initialTransaction = new Transaction({
-      walletId: wallet._id,
-      amount: balance,
-      balance: balance,
-      description: 'Initial setup',
-      type: 'CREDIT', // Assuming it's a credit for setup
-      date: new Date(),
+        walletId: wallet._id,
+        amount: balance,
+        balance: balance,
+        description: "Initial setup",
+        type: "CREDIT", // Assuming it's a credit for setup
+        date: new Date(),
     });
 
     // Save the initial transaction to the database
@@ -28,11 +31,11 @@ exports.setupWallet = async (balance, name) => {
 
     // Respond with the wallet and initial transaction details
     return {
-      id: wallet._id,
-      balance: wallet.balance,
-      name: wallet.name,
-      date: wallet.date,
-      transactionId: initialTransaction._id, // Provide the transaction ID in the response
+        id: wallet._id,
+        balance: wallet.balance,
+        name: wallet.name,
+        date: wallet.date,
+        transactionId: initialTransaction._id, // Provide the transaction ID in the response
     };
 };
 
@@ -45,7 +48,10 @@ exports.transactWallet = async (walletId, amount, description) => {
         const wallet = await Wallet.findById(walletId);
 
         if (!wallet) {
-            throw new Error("WALLET_NOT_FOUND");
+            return {
+                errorCode: "InvalidWallet",
+                message: "Please enter a correct wallet id",
+            };
         }
 
         // // uncomment below code if you want to test optimistic concurrency approach - i.e. check version error
@@ -62,7 +68,10 @@ exports.transactWallet = async (walletId, amount, description) => {
         if (newBalance < 0) {
             //     session.abortTransaction();
             //   session.endSession();
-            throw new Error("Insufficient balance");
+            return {
+                errorCode: "InsufficientFunds",
+                message: "Wallet does not have enough funds to complete this transaction",
+            };
         }
 
         // Create a new transaction record
@@ -94,7 +103,8 @@ exports.transactWallet = async (walletId, amount, description) => {
         if (error.name == "VersionError") {
             // The document has already been updated by someone else. Reject this transaction.
             console.error(
-                "Version error, someone else have already updated the document", error
+                "Version error, someone else have already updated the document",
+                error
             );
             return {
                 errorCode: "VersionError",
@@ -122,7 +132,10 @@ exports.getTransactions = async (walletId, skip, limit) => {
         const wallet = await Wallet.findById(walletId);
 
         if (!wallet) {
-            throw new Error("Wallet not found");
+            return {
+                errorCode: "InvalidWallet",
+                message: "Please enter a correct wallet id",
+            };
         }
 
         // Query transactions based on walletId, skip, and limit
@@ -151,7 +164,10 @@ exports.getWallet = async (walletId) => {
         const wallet = await Wallet.findById(walletId);
 
         if (!wallet) {
-            throw new Error("Wallet not found");
+            return {
+                errorCode: "InvalidWallet",
+                message: "Please enter a correct wallet id",
+            };
         }
 
         return {

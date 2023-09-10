@@ -1,9 +1,5 @@
-// const Wallet = require("../models/Wallet");
-// const Transaction = require("../models/Transaction");
 const { isValidObjectId } = require("mongoose");
-
 const walletService = require("../services/walletService");
-// const transactionService = require("../services/transactionService");
 
 // Create a new wallet with initial balance
 exports.setupWallet = async (req, res) => {
@@ -49,7 +45,7 @@ exports.transactWallet = async (req, res) => {
             return res.status(404).json(result);
         }
         
-        if (result.errorCode == "VersionError") {
+        if (["VersionError", "InsufficientFunds"].indexOf(result.errorCode) != -1) {
             return res.status(412).json(result);
         }
 
@@ -67,7 +63,7 @@ exports.getTransactions = async (req, res) => {
         const limit = parseInt(req.query.limit || 10);
 
         if (!isValidObjectId(walletId)) {
-            return res.status(400).json({ error: "Invalid wallet ID" });
+            return res.status(404).json({ error: "Invalid wallet ID" });
         }
 
         const result = await walletService.getTransactions(
@@ -76,7 +72,7 @@ exports.getTransactions = async (req, res) => {
             limit
         );
 
-        if (result.error === "Wallet not found") {
+        if (result.errorCode === "InvalidWallet") {
             return res.status(404).json({ error: "Wallet not found" });
         }
 
@@ -91,15 +87,14 @@ exports.getWallet = async (req, res) => {
     try {
         const walletId = req.params.walletId;
 
-        // Validate that walletId is a valid ObjectId
         if (!isValidObjectId(walletId)) {
-            return res.status(400).json({ error: "Invalid wallet ID" });
+            return res.status(404).json({ error: "Invalid wallet ID" });
         }
 
         // Find the wallet by ID
         const result = await walletService.getWallet(walletId);
 
-        if (result.error === "Wallet not found") {
+        if (result.errorCode === "InvalidWallet") {
             return res.status(404).json({ error: "Wallet not found" });
         }
 
