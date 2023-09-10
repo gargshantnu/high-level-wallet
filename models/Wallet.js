@@ -14,6 +14,6 @@ const walletSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
-});
+}, { versionKey: '__v', optimisticConcurrency: true });
 
 module.exports = mongoose.model("Wallet", walletSchema);

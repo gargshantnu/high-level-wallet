@@ -24,8 +24,13 @@ exports.transactWallet = async (walletId, amount, description) => {
         const wallet = await Wallet.findById(walletId);
 
         if (!wallet) {
-            throw new Error("Wallet not found");
+            throw new Error("WALLET_NOT_FOUND");
         }
+
+        // uncomment below code if you want to test optimistic concurrency approach - i.e. check version error
+        const wallet2 = await Wallet.findById(walletId);
+        wallet2.balance += 1;
+        await wallet2.save();
 
         // Determine if it's a credit or debit
         const transactionType = amount < 0 ? "DEBIT" : "CREDIT";
@@ -65,10 +70,27 @@ exports.transactWallet = async (walletId, amount, description) => {
             transactionId: transaction._id,
         };
     } catch (error) {
-        console.error(error);
+        if (error.name == "VersionError") {
+            // The document has already been updated by someone else. Reject this transaction.
+            console.error(
+                "Version error, someone else have already updated the document", error
+            );
+            return {
+                errorCode: "VersionError",
+                message:
+                    "Version error, someone else have already updated the document",
+            };
+        }
+        if (error?.message == "WALLET_NOT_FOUND") {
+            console.error("Invalid wallet", error);
+            return {
+                errorCode: "InvalidWallet",
+                message: "Please enter a correct wallet id",
+            };
+        }
         // session.abortTransaction();
         // session.endSession();
-        throw error;
+        throw new Error(error);
     }
 };
 

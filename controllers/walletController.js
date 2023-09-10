@@ -1,9 +1,9 @@
-const Wallet = require("../models/Wallet");
-const Transaction = require("../models/Transaction");
+// const Wallet = require("../models/Wallet");
+// const Transaction = require("../models/Transaction");
 const { isValidObjectId } = require("mongoose");
 
 const walletService = require("../services/walletService");
-const transactionService = require("../services/transactionService");
+// const transactionService = require("../services/transactionService");
 
 // Create a new wallet with initial balance
 exports.setupWallet = async (req, res) => {
@@ -40,8 +40,12 @@ exports.transactWallet = async (req, res) => {
             description
         );
 
-        if (result.error) {
-            return res.status(404).json({ error: result.error });
+        if (result.errorCode == "InvalidWallet") {
+            return res.status(404).json(result);
+        }
+        
+        if (result.errorCode == "VersionError") {
+            return res.status(412).json(result);
         }
 
         res.json(result);
