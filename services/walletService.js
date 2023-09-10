@@ -12,7 +12,30 @@ exports.setupWallet = async (balance, name) => {
 
     const wallet = new Wallet({ balance, name });
 
-    return await wallet.save();
+    // Save the wallet to the database
+    await wallet.save();
+
+    // Create an initial transaction for the setup
+    const initialTransaction = new Transaction({
+      walletId: wallet._id,
+      amount: balance,
+      balance: balance,
+      description: 'Initial setup',
+      type: 'CREDIT', // Assuming it's a credit for setup
+      date: new Date(),
+    });
+
+    // Save the initial transaction to the database
+    await initialTransaction.save();
+
+    // Respond with the wallet and initial transaction details
+    return {
+      id: wallet._id,
+      balance: wallet.balance,
+      name: wallet.name,
+      date: wallet.date,
+      transactionId: initialTransaction._id, // Provide the transaction ID in the response
+    };
 };
 
 exports.transactWallet = async (walletId, amount, description) => {

@@ -13,9 +13,9 @@ exports.setupWallet = async (req, res) => {
         let savedWallet = await walletService.setupWallet(balance, name);
 
         return res.status(201).json({
-            id: savedWallet._id,
+            id: savedWallet.id,
             balance: savedWallet.balance,
-            transactionId: "4349349843", // Generate a transaction ID
+            transactionId: savedWallet.transactionId,
             name: savedWallet.name,
             date: savedWallet.date,
         });
