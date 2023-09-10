@@ -3,13 +3,14 @@ global["__mainPath"] = __dirname;
 const express = require("express");
 const mongoose = require("mongoose");
 const app = express();
+const config = require("./config/config")
 
 const cors = require('cors');
 
 app.use(cors());
 
 mongoose.connect(
-    "mongodb+srv://mongo:mongo@cluster0.twuqxlt.mongodb.net/?retryWrites=true&w=majority",
+    config.mongoURL,
     {
         useNewUrlParser: true,
         useUnifiedTopology: true,
