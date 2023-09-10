@@ -5,9 +5,7 @@ exports.setupWallet = async (balance, name) => {
     // Check if a wallet with the same name already exists
     const existingWallet = await Wallet.findOne({ name });
     if (existingWallet) {
-        return res
-            .status(400)
-            .json({ error: "Wallet with the same name already exists" });
+        return { errorCode: "WalletAlreadyExist", message: "Wallet with the same name already exists" };
     }
 
     const wallet = new Wallet({ balance, name });

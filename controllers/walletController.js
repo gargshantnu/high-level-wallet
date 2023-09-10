@@ -11,6 +11,10 @@ exports.setupWallet = async (req, res) => {
         const { balance, name } = req.body;
 
         let savedWallet = await walletService.setupWallet(balance, name);
+        
+        if (savedWallet.errorCode) {
+            return res.status(404).json(savedWallet);
+        }
 
         return res.status(201).json({
             id: savedWallet.id,
@@ -20,6 +24,7 @@ exports.setupWallet = async (req, res) => {
             date: savedWallet.date,
         });
     } catch (error) {
+        console.error(error);
         res.status(500).json({ error: "Internal Server Error" });
     }
 };
