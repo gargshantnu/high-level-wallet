@@ -1,13 +1,14 @@
 const { isValidObjectId } = require("mongoose");
 const walletService = require("../services/walletService");
+const fs = require("fs");
+const path = require("path");
 
-// Create a new wallet with initial balance
 exports.setupWallet = async (req, res) => {
     try {
         const { balance, name } = req.body;
 
         let savedWallet = await walletService.setupWallet(balance, name);
-        
+
         if (savedWallet.errorCode) {
             return res.status(404).json(savedWallet);
         }
@@ -44,8 +45,11 @@ exports.transactWallet = async (req, res) => {
         if (result.errorCode == "InvalidWallet") {
             return res.status(404).json(result);
         }
-        
-        if (["VersionError", "InsufficientFunds"].indexOf(result.errorCode) != -1) {
+
+        if (
+            ["VersionError", "InsufficientFunds"].indexOf(result.errorCode) !=
+            -1
+        ) {
             return res.status(412).json(result);
         }
 
@@ -61,6 +65,16 @@ exports.getTransactions = async (req, res) => {
         const walletId = req.query.walletId;
         const skip = parseInt(req.query.skip || 0);
         const limit = parseInt(req.query.limit || 10);
+        let sort;
+
+        if (req?.query?.sort) {
+            sort = Object.fromEntries(
+                Object.entries(req.query.sort).map(([key, value]) => [
+                    key,
+                    Number(value),
+                ])
+            );
+        }
 
         if (!isValidObjectId(walletId)) {
             return res.status(404).json({ error: "Invalid wallet ID" });
@@ -69,7 +83,8 @@ exports.getTransactions = async (req, res) => {
         const result = await walletService.getTransactions(
             walletId,
             skip,
-            limit
+            limit,
+            sort
         );
 
         if (result.errorCode === "InvalidWallet") {
@@ -77,6 +92,57 @@ exports.getTransactions = async (req, res) => {
         }
 
         res.json(result);
+    } catch (error) {
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+};
+
+exports.exportTransactions = async (req, res) => {
+    try {
+        const walletId = req.query.walletId;
+        let sort;
+
+        if (req?.query?.sort) {
+            sort = Object.fromEntries(
+                Object.entries(req.query.sort).map(([key, value]) => [
+                    key,
+                    Number(value),
+                ])
+            );
+        }
+
+        if (!isValidObjectId(walletId)) {
+            return res.status(404).json({ error: "Invalid wallet ID" });
+        }
+
+        const fileName = await walletService.generateTransactionCSV(
+            walletId,
+            sort
+        );
+
+        if (fileName.errorCode === "InvalidWallet") {
+            return res.status(404).json({ error: "Wallet not found" });
+        }
+        const file = fs.createReadStream(fileName);
+        res.setHeader(
+            "Content-Disposition",
+            `attachment; filename=${fileName}`
+        );
+        res.setHeader("Content-Type", "text/csv");
+        res.sendFile(path.join(__mainPath, fileName), (err) => {
+            if (err) {
+                console.error(err);
+            } else {
+                fs.unlink(path.join(__mainPath, fileName), (unlinkErr) => {
+                    if (unlinkErr) {
+                        console.error(
+                            "Error deleting the CSV file:",
+                            unlinkErr
+                        );
+                    }
+                });
+            }
+        });
     } catch (error) {
         res.status(500).json({ error: "Internal Server Error" });
     }

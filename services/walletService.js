@@ -1,5 +1,6 @@
 const Wallet = require("../models/Wallet");
 const Transaction = require("../models/Transaction");
+const createCsvWriter = require("csv-writer").createObjectCsvWriter;
 
 exports.setupWallet = async (balance = 0, name) => {
     // Check if a wallet with the same name already exists
@@ -70,7 +71,8 @@ exports.transactWallet = async (walletId, amount, description) => {
             //   session.endSession();
             return {
                 errorCode: "InsufficientFunds",
-                message: "Wallet does not have enough funds to complete this transaction",
+                message:
+                    "Wallet does not have enough funds to complete this transaction",
             };
         }
 
@@ -126,7 +128,12 @@ exports.transactWallet = async (walletId, amount, description) => {
 };
 
 // Fetch transactions for a wallet with optional pagination, sorting, and filtering
-exports.getTransactions = async (walletId, skip, limit) => {
+exports.getTransactions = async (
+    walletId,
+    skip,
+    limit,
+    sortBy = { date: -1, amount: -1 }
+) => {
     try {
         // Find the wallet by ID to validate its existence
         const wallet = await Wallet.findById(walletId);
@@ -143,7 +150,7 @@ exports.getTransactions = async (walletId, skip, limit) => {
         const count = await Transaction.countDocuments(query);
 
         const transactions = await Transaction.find(query)
-            .sort({ date: -1, amount: -1 }) // Sort by date (descending) and amount (descending)
+            .sort(sortBy)
             .skip(skip)
             .limit(limit);
 
@@ -151,6 +158,52 @@ exports.getTransactions = async (walletId, skip, limit) => {
             totalTransactions: count,
             transactions,
         };
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
+
+exports.generateTransactionCSV = async (
+    walletId,
+    sortBy = { date: -1, amount: -1 }
+) => {
+    try {
+        // Find the wallet by ID to validate its existence
+        const wallet = await Wallet.findById(walletId);
+
+        if (!wallet) {
+            return {
+                errorCode: "InvalidWallet",
+                message: "Please enter a correct wallet id",
+            };
+        }
+
+        // Query transactions based on walletId, skip, and limit
+        const query = { walletId };
+        const fileName = `transactions-${walletId}.csv`;
+
+        const transactions = await Transaction.find(query)
+            .sort(sortBy)
+            .limit(500)
+            .lean();
+
+        const csvWriter = createCsvWriter({
+            path: fileName,
+            header: [
+                { id: "_id", title: "Transaction ID" },
+                { id: "date", title: "Date" },
+                { id: "amount", title: "Amount" },
+                { id: "type", title: "Type" },
+                { id: "balance", title: "Balance" },
+                { id: "description", title: "Description" },
+            ],
+        });
+
+        // TODO: we need to create some async service - where we will create a CSV file slowly and upload to S3, whose link later can be shared with customer.
+        await csvWriter.writeRecords(transactions);
+
+        return fileName;
     } catch (error) {
         console.error(error);
         throw error;
