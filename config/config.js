@@ -7,7 +7,7 @@ const getEnvId = function () {
 };
 
 const configPath = path.resolve(
-    __basedir,
+    __mainPath,
     "config/" + getEnvId() + ".json"
 );
 var config = JSON.parse(fs.readFileSync(configPath));
