@@ -1,6 +1,5 @@
 const Wallet = require("../models/Wallet");
 const Transaction = require("../models/Transaction");
-const { isValidObjectId, Types } = require("mongoose");
 
 exports.setupWallet = async (balance, name) => {
     // Check if a wallet with the same name already exists
