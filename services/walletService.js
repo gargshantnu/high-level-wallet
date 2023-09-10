@@ -27,10 +27,10 @@ exports.transactWallet = async (walletId, amount, description) => {
             throw new Error("WALLET_NOT_FOUND");
         }
 
-        // uncomment below code if you want to test optimistic concurrency approach - i.e. check version error
-        const wallet2 = await Wallet.findById(walletId);
-        wallet2.balance += 1;
-        await wallet2.save();
+        // // uncomment below code if you want to test optimistic concurrency approach - i.e. check version error
+        // const wallet2 = await Wallet.findById(walletId);
+        // wallet2.balance += 1;
+        // await wallet2.save();
 
         // Determine if it's a credit or debit
         const transactionType = amount < 0 ? "DEBIT" : "CREDIT";
