@@ -4,7 +4,6 @@
 
 ## Pending items:
 
-- Move mongo configuration to config folder
 - Add webpack/build support.
 - Add idempotent key support.
 - Deploy using pm2 - so that multiple cores of same nodes can be used.
