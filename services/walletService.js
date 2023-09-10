@@ -2,7 +2,7 @@ const Wallet = require("../models/Wallet");
 const Transaction = require("../models/Transaction");
 const createCsvWriter = require("csv-writer").createObjectCsvWriter;
 
-exports.setupWallet = async (balance = 0, name) => {
+exports.setupWallet = async (balance, name) => {
     // Check if a wallet with the same name already exists
     const existingWallet = await Wallet.findOne({ name });
     if (existingWallet) {
@@ -152,7 +152,8 @@ exports.getTransactions = async (
         const transactions = await Transaction.find(query)
             .sort(sortBy)
             .skip(skip)
-            .limit(limit);
+            .limit(limit)
+            // .lean();
 
         return {
             totalTransactions: count,

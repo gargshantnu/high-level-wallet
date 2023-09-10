@@ -7,7 +7,7 @@ exports.setupWallet = async (req, res) => {
     try {
         const { balance, name } = req.body;
 
-        let savedWallet = await walletService.setupWallet(balance, name);
+        let savedWallet = await walletService.setupWallet(balance || 0, name);
 
         if (savedWallet.errorCode) {
             return res.status(404).json(savedWallet);
