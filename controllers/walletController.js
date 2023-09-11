@@ -83,7 +83,7 @@ exports.getTransactions = async (req, res) => {
         const result = await walletService.getTransactions(
             walletId,
             skip,
-            limit,
+            Math.max(limit, 100),
             sort
         );
 
