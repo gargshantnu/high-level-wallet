@@ -11,6 +11,8 @@ Please check [Future Plans](./FUTURE_PLANS.md) to know about what all things we 
 
 This documentation provides details on the Wallet API, which allows you to manage wallets, check balances, fetch transaction history, and perform credit and debit operations.
 
+CURL for all the apis are added in seperate file: [CURLS](./CURLS.md)
+
 ## Table of Contents
 
 1. [Setup Wallet](#1-setup-wallet)
