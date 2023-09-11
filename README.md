@@ -2,16 +2,9 @@
 
 
 
-## Pending items:
+## Future Plans
 
-- Add webpack/build support.
-- Add idempotent key support.
-- Deploy using pm2 - so that multiple cores of same nodes can be used.
-- Support to run on EBS/Docker
-- Winston or other logging library
-- Do we need to create 1 more service - TransactionService?
-
-
+Please check [Future Plans](./FUTURE_PLANS.md) to know about what all things we can do to have a better infrastrucure.
 
 
 # Wallet APIs
