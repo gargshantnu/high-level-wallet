@@ -166,3 +166,33 @@ Content-Type: application/json
     "transactionId": "64feff5161f78309ea6e0655"
 }
 ```
+
+
+
+
+
+## 2. Export transactions
+
+This api can be used to export all the transactions of any wallet.
+
+In this API, you will have to pass 2 parameter:
+
+- `walletId` (String): This is the wallet ID for which you want to get the wallet information.
+- `sort` (Optional): With this, you can sort the transactions. For example, to sort by amount in ascending order, use `&sort[amount]=1`. If nothing is passed, sorting is done on time (DESC) and amount (DESC). This is same as Fetch transaction list api.
+
+### Request
+
+```http
+GET /transactions/export?walletId=64fdd84e35ff8b3759ccab6f&sort[amount]=1
+```
+
+### Response
+
+```json
+{
+    "id": "64fefdaf61f78309ea6e064a",
+    "balance": 20.1235,
+    "name": "shantnu6",
+    "date": "2023-09-11T11:44:47.866Z"
+}
+```
