@@ -10,4 +10,4 @@
 - Support to run on EBS/Docker
 - Winston or other logging library
 - Do we need to create 1 more service - TransactionService?
-- nohup node app.js > app.log 2>&1 &
+- nohup npm run start-test > app.log 2>&1 &
