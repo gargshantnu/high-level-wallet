@@ -1,6 +1,6 @@
 # Project Pending Items
 
-This README.md file outlines the pending items and tasks for our project. Each item is described in detail below.
+This file outlines the pending items and future plans for our project. Each item is described in detail below.
 
 ## 1. Add Webpack/Build Support
 
