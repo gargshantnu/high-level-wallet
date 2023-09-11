@@ -171,7 +171,7 @@ Content-Type: application/json
 
 
 
-## 2. Export transactions
+## 5. Export transactions
 
 This api can be used to export all the transactions of any wallet.
 
