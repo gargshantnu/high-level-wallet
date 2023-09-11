@@ -29,7 +29,7 @@ This documentation provides details on the Wallet API, which allows you to manag
 
 ## Base path:
 
-For now, you can use base path as `http://18.232.86.26:3001/` and can try any of the below apis with this.
+For now, you can use base path as `http://18.232.86.26:3001/` and can try any of the below apis with this. Alternatively UI code is hosted here: http://18.232.86.26:3000/transactions , you can try that too.
 
 
 ## 1. Setup Wallet
