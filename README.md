@@ -27,6 +27,11 @@ This documentation provides details on the Wallet API, which allows you to manag
 
 
 
+## Base path:
+
+For now, you can use base path as `http://18.232.86.26:3001/` and can try any of the below apis with this.
+
+
 ## 1. Setup Wallet
 
 Create a new wallet with an initial balance.
